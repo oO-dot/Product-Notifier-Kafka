@@ -1,0 +1,26 @@
+server:
+  port: 0
+spring:
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092, localhost:9094
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      properties:
+        delivery:
+          timeout:
+            ms: 10000
+        linger:
+          ms: 0
+        request:
+          timeout:
+            ms: 5000
+        enable:
+          idempotence: true
+        max:
+          in:
+            flight:
+              requests:
+                per:
+                  connection: 5
