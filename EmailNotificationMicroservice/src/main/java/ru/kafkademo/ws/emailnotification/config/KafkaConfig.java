@@ -14,6 +14,10 @@ import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.util.backoff.FixedBackOff;
+import org.springframework.web.client.HttpServerErrorException;
+import ru.kafkademo.ws.emailnotification.exception.NonRetryableException;
+import ru.kafkademo.ws.emailnotification.exception.RetryableException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +54,9 @@ public class KafkaConfig {
     @Bean
     ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory(
             ConsumerFactory<String, Object> consumerFactory, KafkaTemplate kafkaTemplate) {
-        DefaultErrorHandler errorHandler = new DefaultErrorHandler(new DeadLetterPublishingRecoverer(kafkaTemplate)); // будет создавать новый топик и класть в него message которые не прошли(Exception где будет)
+        DefaultErrorHandler errorHandler = new DefaultErrorHandler(new DeadLetterPublishingRecoverer(kafkaTemplate), new FixedBackOff(3000, 3)); // будет создавать новый топик и класть в него message которые не прошли(Exception где будет) (также добавили интервал попыток и их количество для retryableException(3 секунды интервал и  3 попытки))
+        errorHandler.addNotRetryableExceptions(NonRetryableException.class); // можем перечислять все NonRetryableException
+        errorHandler.addRetryableExceptions(RetryableException.class); // можем перечислять все RetryableException
 
         ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);

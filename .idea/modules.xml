@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ProductNotifier.iml" filepath="$PROJECT_DIR$/ProductNotifier.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mockService/mockService.iml" filepath="$PROJECT_DIR$/mockService/mockService.iml" />
     </modules>
   </component>
 </project>
